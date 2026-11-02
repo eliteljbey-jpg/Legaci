@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import { placements, placementNetworks, syncAvailable, site, writingCredits } from '../data/site';
+const history = writingCredits.filter((w) => w.title !== 'TV instrumental cues');
+---
+<Layout title="Sync & Licensing" description="LJ Bey sync and licensing: placement history, what is available from the Elite House catalog, and how to get in touch.">
+  <PageHero eyebrow="For supervisors and libraries" title="Sync & Licensing" lede="Instrumental cues on national television, and an Elite House catalog ready for your project." mandala="mandala-third-eye" tint="#e4e5f8" />
+  <div class="wrap mt-10 grid gap-8 md:grid-cols-2">
+    <section class="card p-6">
+      <p class="eyebrow">Available to license</p>
+      <h2 class="text-2xl mt-1">The Elite House catalog</h2>
+      <ul class="mt-4 space-y-4">
+        {syncAvailable.map((s) => <li><h3 class="font-extrabold" style="font-family:var(--font-sans)">{s.title}</h3><p class="text-soft">{s.text}</p></li>)}
+      </ul>
+      <p class="mt-5 rounded-xl bg-sand p-4 text-sm"><b>One-stop on Elite House material.</b> Songs with an outside producer or featured artist are cleared song by song; ask about the one you need.</p>
+      <a class="btn btn-gold mt-5" href={`mailto:${site.contactEmail}?subject=Licensing%20inquiry`}>Ask about licensing</a>
+    </section>
+    <section class="card p-6">
+      <p class="eyebrow">Placement history</p>
+      <h2 class="text-2xl mt-1">Where the cues have aired</h2>
+      <p class="mt-3 text-soft">Instrumental cues placed around 2015 ({placementNetworks}) through publisher London Cage Music, still earning performance royalties on reruns.</p>
+      <ul class="mt-3 list-disc pl-5 font-semibold space-y-1">{placements.map((s) => <li>{s}</li>)}</ul>
+      <h3 class="mt-5 font-extrabold" style="font-family:var(--font-sans)">Writer credits</h3>
+      <ul class="mt-2 list-disc pl-5 space-y-1">{history.map((w) => <li>{w.title}{w.year && ` (${w.year})`}: {w.note}</li>)}</ul>
+      <p class="mt-5 rounded-xl bg-sand p-4 text-sm"><b>Please note:</b> these are past placements and credits, listed as history. These cues and songs are not offered for license here.</p>
+    </section>
+  </div>
+</Layout>

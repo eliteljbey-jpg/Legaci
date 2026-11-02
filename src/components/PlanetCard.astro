@@ -1,0 +1,24 @@
+---
+import Img from './Img.astro';
+import { planets } from '../data/site';
+interface Props { planet: (typeof planets)[number]; compact?: boolean }
+const { planet, compact = false } = Astro.props;
+---
+<article class="card relative" style={`background:${planet.tint}`}>
+  {planet.number !== null && (
+    <span class="display absolute right-3 top-2 text-3xl z-10" style={`color:${planet.accent}`} aria-label={`Number ${planet.number}`}>{planet.number}</span>
+  )}
+  <Img src={`/assets/planet-${planet.slug}.webp`} alt={`${planet.name}, Planet Head character`} class="melt w-full h-auto" sizes="(min-width: 1024px) 20vw, 50vw" />
+  <div class="px-4 pb-4">
+    <h3 class="text-xl" style={`color:${planet.accent}`}>{planet.name}</h3>
+    {!compact && (
+      <>
+        <p class="mt-1 text-sm font-semibold">{planet.role}</p>
+        <dl class="mt-2 text-sm text-soft">
+          {planet.chakra && <div><dt class="inline font-bold">Chakra: </dt><dd class="inline">{planet.chakra}</dd></div>}
+          <div><dt class="inline font-bold">Colors: </dt><dd class="inline">{planet.colors}</dd></div>
+        </dl>
+      </>
+    )}
+  </div>
+</article>

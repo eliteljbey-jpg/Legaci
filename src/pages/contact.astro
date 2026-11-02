@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+const topics = ['Booking', 'Sync & licensing', 'Press', 'Merch', 'Something else'];
+---
+<Layout title="Contact" description="Booking, sync and press contact for LJ Bey.">
+  <PageHero eyebrow="Contact" title="Get in touch" lede="Booking, sync and press." mandala="mandala-throat" tint="#dcf1fa">
+    <p class="mt-4"><a class="link text-lg break-all" href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
+  </PageHero>
+  <div class="wrap mt-10 max-w-2xl!">
+    <form id="contact-form" class="card p-6 space-y-4 relative" data-mail={site.contactEmail}>
+      <div><label class="field-label" for="c-name">Name</label><input class="field" id="c-name" name="name" required maxlength="200" autocomplete="name" /></div>
+      <div><label class="field-label" for="c-email">Email</label><input class="field" id="c-email" name="email" type="email" required maxlength="320" autocomplete="email" /></div>
+      <div><label class="field-label" for="c-topic">Topic</label>
+        <select class="field" id="c-topic" name="topic">{topics.map((t) => <option>{t}</option>)}</select></div>
+      <div><label class="field-label" for="c-message">Message</label><textarea class="field" id="c-message" name="message" rows="6" required maxlength="5000"></textarea></div>
+      <div class="sr-trap" aria-hidden="true"><label>Leave empty <input name="company" tabindex="-1" autocomplete="off" /></label></div>
+      <button class="btn btn-gold" type="submit">Send message</button>
+      <p id="c-status" class="font-bold min-h-6" role="status"></p>
+    </form>
+  </div>
+</Layout>
+
+<script>
+  import { supabase } from '../lib/supabase';
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const status = document.getElementById('c-status')!;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const d = new FormData(form);
+    if (d.get('company')) return;
+    const v = (k: string) => String(d.get(k) || '').trim();
+    const fallback = () => {
+      const mail = form.dataset.mail!;
+      const href = `mailto:${mail}?subject=${encodeURIComponent(v('topic'))}&body=${encodeURIComponent(v('message'))}`;
+      status.innerHTML = `We couldn't send that just now. Your message is still here. <a class="link" href="${href}">Send it by email instead</a>.`;
+    };
+    if (!supabase) return fallback();
+    status.textContent = 'Sending…';
+    const { error } = await supabase.from('contact_messages').insert({ name: v('name'), email: v('email'), topic: v('topic'), message: v('message') });
+    if (error) return fallback();
+    form.reset();
+    status.textContent = 'Thank you. Your message is in.';
+  });
+</script>

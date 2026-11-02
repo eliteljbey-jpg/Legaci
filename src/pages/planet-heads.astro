@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import PlanetCard from '../components/PlanetCard.astro';
+import Img from '../components/Img.astro';
+import { planets, duos, acts, saturnArt } from '../data/site';
+const mandalas = planets.filter((p) => p.mandala);
+---
+<Layout title="Planet Heads" description="Saturn and the Planet Heads: the characters and story world of The Fruit Of Love." image="/assets/univ-crew-college.webp">
+  <PageHero eyebrow="The Saturn Universe" title="Planet Heads" lede="Saturn is a young planet-headed being, ring tilted, all potential and no ground. He leaves orbit and falls into Earth life. These are the ones he meets." mandala="mandala-root" tint="#fde4dc" />
+
+  <section class="wrap mt-10 grid md:grid-cols-[minmax(0,22rem)_1fr] gap-8 items-center">
+    <Img src={saturnArt} alt="Saturn, the lead Planet Head" class="melt w-full h-auto" sizes="22rem" />
+    <div>
+      <p class="eyebrow">The lead</p>
+      <h2 class="text-4xl mt-1">Saturn</h2>
+      <p class="lede mt-3">Time. Discipline. Number 8, the Root chakra, a gold ring that starts out crooked. By the end of the story that ring is not an accident of birth. It is a vow he chose.</p>
+    </div>
+  </section>
+
+  <section class="wrap mt-14">
+    <h2 class="text-3xl md:text-4xl">The roster</h2>
+    <div class="mt-6 grid grid-cols-2 lg:grid-cols-5 gap-4">
+      {planets.map((p) => <PlanetCard planet={p} />)}
+    </div>
+  </section>
+
+  <section class="wrap mt-14">
+    <h2 class="text-3xl md:text-4xl">The story in three acts</h2>
+    <div class="mt-6 grid gap-4 md:grid-cols-3">
+      {acts.map((a) => (
+        <div class="card p-5" style={`border-top:6px solid ${a.color}`}>
+          <h3 class="text-2xl">{a.name}</h3>
+          <p class="text-sm font-bold text-soft mt-1">{a.range}</p>
+          <p class="mt-2">{a.text}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14" style="background:linear-gradient(120deg,#efe4fb,#fde4dc 60%,#fdf3c4)">
+    <div class="wrap py-12 grid md:grid-cols-2 gap-8 items-center">
+      <div>
+        <p class="eyebrow">Series coming with the singles</p>
+        <h2 class="text-3xl md:text-4xl mt-1">One song. One episode.</h2>
+        <p class="lede mt-3">A vertical-drama series adapts the album one song at a time. Each week's scene is on the campaign page.</p>
+        <a class="btn btn-gold mt-5" href="/the-fruit-of-love/">Read the episodes</a>
+      </div>
+      <Img src="/assets/covers/cover-01.webp" alt="Saturn slipping off his orbital path toward Earth" class="rounded-3xl w-full max-w-sm mx-auto h-auto shadow-xl" sizes="24rem" />
+    </div>
+  </section>
+
+  <section class="wrap mt-14">
+    <h2 class="text-3xl md:text-4xl">Better together</h2>
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {duos.map((d) => <div class="card bg-cream"><Img src={`/assets/${d.file}.webp`} alt={d.alt} width={1920} height={1280} class="w-full h-auto" /></div>)}
+    </div>
+  </section>
+
+  <section class="wrap mt-14 grid md:grid-cols-2 gap-8 items-center">
+    <Img src="/assets/univ-crew-college.webp" alt="All ten Planet Heads in college outfits with Universe City badges" width={1920} height={1280} class="rounded-3xl w-full h-auto" sizes="(min-width: 768px) 50vw, 100vw" />
+    <div>
+      <p class="eyebrow">University College</p>
+      <h2 class="text-3xl md:text-4xl mt-1">Welcome to Universe City</h2>
+      <p class="lede mt-3">The Planet Heads in college outfits, each with a small round Universe City badge.</p>
+      <a class="btn btn-line mt-5" href="/merch/#University-College">See the line</a>
+    </div>
+  </section>
+
+  <section class="wrap mt-14">
+    <h2 class="text-3xl md:text-4xl">The seven mandalas</h2>
+    <p class="lede mt-2">Seven Planet Heads each govern a chakra.</p>
+    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+      {mandalas.map((p) => (
+        <figure class="text-center">
+          <Img src={`/assets/${p.mandala}.webp`} alt={`${p.chakra} chakra mandala`} class="melt w-full h-auto rounded-full" sizes="(min-width: 1024px) 14vw, 50vw" />
+          <figcaption class="mt-2 text-sm font-bold">{p.chakra}<br /><span class="font-normal text-soft">{p.name}</span></figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+</Layout>

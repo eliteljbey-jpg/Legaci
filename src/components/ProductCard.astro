@@ -1,0 +1,18 @@
+---
+import Img from './Img.astro';
+import type { Product } from '../data/site';
+import { formatPrice } from '../lib/products';
+interface Props { product: Product }
+const { product } = Astro.props;
+const price = formatPrice(product.price_cents);
+---
+<a href={`/merch/${product.slug}/`} class="card group block hover:-translate-y-1 transition-transform" data-line={product.line} data-product={product.slug}>
+  <div class="bg-sand aspect-square overflow-hidden flex items-center justify-center">
+    <Img src={product.image_path} alt={product.name} class="w-full h-full object-cover group-hover:scale-105 transition-transform" sizes="(min-width: 1024px) 25vw, 50vw" />
+  </div>
+  <div class="p-4">
+    <p class="eyebrow !text-[.68rem]">{product.line}</p>
+    <h3 class="mt-1 font-sans font-extrabold text-base leading-snug" style="font-family:var(--font-sans)">{product.name}</h3>
+    {price && <p class="mt-1 font-bold text-soft" data-price>{price}</p>}
+  </div>
+</a>

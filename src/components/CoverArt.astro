@@ -1,0 +1,20 @@
+---
+// Shows public/assets/covers/cover-NN.webp when it exists; a colored tile otherwise.
+import { existsSync } from 'node:fs';
+import Img from './Img.astro';
+interface Props { number?: number; title: string; src?: string; label?: string; class?: string }
+const { number, title, src, label, class: cls = '' } = Astro.props;
+const pad = number ? String(number).padStart(2, '0') : '';
+const path = src ?? (number ? `/assets/covers/cover-${pad}.webp` : '');
+const hasArt = path && existsSync(`public${path}`);
+const hues = ['#d32f2f', '#ef7d1a', '#e8a825', '#2e9e58', '#2a9fd6', '#4340b5', '#8a4fd3'];
+const seed = number ?? [...title].reduce((a, c) => a + c.charCodeAt(0), 0);
+const a = hues[seed % 7], b = hues[(seed + 2) % 7];
+---
+{hasArt
+  ? <Img src={path} alt={`${title} cover art`} class={`aspect-square w-full object-cover ${cls}`} sizes="(min-width: 768px) 25vw, 50vw" />
+  : <div role="img" aria-label={`${title}, cover art coming soon`} class={`aspect-square w-full flex flex-col justify-between p-3 ${cls}`}
+         style={`background: linear-gradient(145deg, ${a}38, #fff8ea 55%, ${b}4d)`}>
+      <span class="display text-2xl" style={`color:${a === '#e8a825' ? '#8a5a00' : a}`}>{label ?? pad}</span>
+      <span class="font-bold text-sm leading-tight text-ink">{title}</span>
+    </div>}

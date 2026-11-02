@@ -1,0 +1,84 @@
+---
+import '../styles/global.css';
+import { site, nav, listen, social } from '../data/site';
+
+interface Props { title?: string; description?: string; image?: string; jsonLd?: object; bare?: boolean }
+const { title, description = site.tagline, image = '/assets/planet-heads-lineup-1.webp', jsonLd, bare = false } = Astro.props;
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name} | The Fruit Of Love`;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const ogImage = new URL(image, site.url).href;
+const path = Astro.url.pathname;
+const musicGroup = {
+  '@context': 'https://schema.org', '@type': 'MusicGroup', name: site.name, url: site.url,
+  genre: ['R&B', 'Hip-Hop'], logo: new URL(site.logo.primary, site.url).href,
+  sameAs: [...listen, ...social].map((l) => l.href),
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#fff8ea" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(musicGroup)} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+  <body class="min-h-screen flex flex-col">
+    {!bare && (
+      <header class="no-print sticky top-0 z-40 bg-cream/95 backdrop-blur">
+        <div class="spectrum-bar"></div>
+        <div class="wrap flex items-center justify-between gap-4 py-2">
+          <a href="/" class="flex items-center gap-2" aria-label="LJ Bey home">
+            <img src={site.logo.primary.replace('/assets/', '/assets/thumbs/')} alt="" width="52" height="52" class="logo-crop" />
+            <span class="display text-xl">LJ Bey</span>
+          </a>
+          <nav aria-label="Main" class="hidden lg:flex items-center gap-1">
+            {nav.map((n) => (
+              <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}
+                 class:list={['rounded-full px-3 py-2 text-sm font-bold hover:bg-sand', path.startsWith(n.href) && 'bg-sand']}>{n.label}</a>
+            ))}
+          </nav>
+          <details class="lg:hidden relative" id="mobile-nav">
+            <summary class="btn btn-line list-none cursor-pointer !min-h-10 !py-1">Menu</summary>
+            <nav aria-label="Mobile" class="absolute right-0 mt-2 w-60 card p-2 flex flex-col">
+              {nav.map((n) => <a href={n.href} class="rounded-lg px-3 py-3 font-bold hover:bg-sand">{n.label}</a>)}
+            </nav>
+          </details>
+        </div>
+      </header>
+    )}
+    <main class="flex-1"><slot /></main>
+    {!bare && (
+      <footer class="no-print mt-16 bg-sand">
+        <div class="spectrum-bar"></div>
+        <div class="wrap grid gap-8 py-10 md:grid-cols-3">
+          <div>
+            <img src={site.logo.primary.replace('/assets/', '/assets/thumbs/')} alt="LJ Bey logo" width="96" height="96" loading="lazy" class="logo-crop" />
+            <p class="mt-3 text-sm text-soft">{site.tagline}</p>
+          </div>
+          <div>
+            <h2 class="text-base mb-2">Listen</h2>
+            <ul class="space-y-1">{listen.map((l) => <li><a class="link" href={l.href} rel="noopener">{l.label}</a></li>)}</ul>
+          </div>
+          <div>
+            <h2 class="text-base mb-2">Follow</h2>
+            <ul class="space-y-1">{social.map((l) => <li><a class="link" href={l.href} rel="noopener">{l.label}</a></li>)}</ul>
+          </div>
+        </div>
+        <p class="wrap pb-6 text-sm text-soft">© {new Date().getFullYear()} {site.name}. Elite House.</p>
+      </footer>
+    )}
+  </body>
+</html>

@@ -1,0 +1,55 @@
+---
+// The week's song and the streak counter. The build renders a starting state;
+// the visitor's own date then picks the right week, so it never needs a rebuild.
+import { tracks, campaign, formatDate } from '../data/site';
+const first = tracks[0];
+const data = tracks.map((t) => ({ n: t.number, t: t.title, d: t.date, a: t.action }));
+const cover = (n: number) => `/assets/covers/cover-${String(n).padStart(2, '0')}.webp`;
+---
+<section class="grid gap-6 md:grid-cols-[minmax(0,20rem)_1fr] items-center" id="spotlight" data-tracks={JSON.stringify(data)} data-album={campaign.albumDate}>
+  <img id="sp-cover" src={cover(1).replace('/assets/', '/assets/thumbs/')} alt={`${first.title} cover art`} width="640" height="640" loading="lazy" class="rounded-3xl w-full h-auto shadow-xl" />
+  <div>
+    <p class="eyebrow" id="sp-label">First single drops {formatDate(first.date, { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+    <h2 class="text-3xl md:text-4xl mt-2" id="sp-title">{first.title}</h2>
+    <p class="lede mt-3" id="sp-action">{first.action}</p>
+    <div class="mt-6">
+      <div class="flex items-baseline justify-between font-bold">
+        <span>The 39-week streak</span>
+        <span><span id="sp-count">0</span> of 39 released</span>
+      </div>
+      <div class="mt-2 h-3 rounded-full bg-sand overflow-hidden" role="presentation">
+        <div id="sp-bar" class="spectrum-bar h-full! rounded-full" style="width:0%; background-size: 100vw 100%"></div>
+      </div>
+      <p class="mt-2 text-sm text-soft" id="sp-next"></p>
+    </div>
+    <a class="btn btn-gold mt-5" href="/the-fruit-of-love/">See the whole schedule</a>
+  </div>
+</section>
+
+<script>
+  const root = document.getElementById('spotlight');
+  if (root) {
+    const tracks: { n: number; t: string; d: string; a: string }[] = JSON.parse(root.dataset.tracks!);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const now = new Date();
+    const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    const out = tracks.filter((t) => t.d <= today);
+    const next = tracks.find((t) => t.d > today);
+    const nice = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+    const set = (id: string, v: string) => { document.getElementById(id)!.textContent = v; };
+    const cover = document.getElementById('sp-cover') as HTMLImageElement;
+
+    const current = out[out.length - 1];
+    if (current) {
+      set('sp-label', out.length === 39 ? 'The final song' : `This week's song · Track ${current.n}`);
+      set('sp-title', current.t);
+      set('sp-action', current.a);
+      cover.alt = `${current.t} cover art`;
+      cover.onerror = () => { cover.onerror = null; cover.src = '/assets/thumbs/saturn-main.webp'; };
+      cover.src = `/assets/thumbs/covers/cover-${pad(current.n)}.webp`;
+    }
+    set('sp-count', String(out.length));
+    document.getElementById('sp-bar')!.style.width = `${(out.length / 39) * 100}%`;
+    if (next) set('sp-next', `Next up: ${next.t}, ${nice(next.d)}`);
+  }
+</script>

@@ -1,0 +1,32 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import Signup from '../../components/Signup.astro';
+import { productLines } from '../../data/site';
+import { getProducts } from '../../lib/products';
+const products = await getProducts();
+---
+<Layout title="Merch" description="The Planet Heads store: Core Saturn, Planet, Chakra Mandala, Planetary Numbers, University College and Crew lines." image="/assets/mockup-saturn-hoodie.webp">
+  <PageHero eyebrow="The store" title="Planet Heads merch" lede="Checkout arrives with the store launch. Join the list below to hear first." mandala="mandala-solar-plexus" tint="#fdf3c4">
+    <nav aria-label="Product lines" class="mt-6 flex flex-wrap gap-2">
+      {productLines.map((l) => <a class="chip" href={`#${l.key.replaceAll(' ', '-')}`}>{l.key}</a>)}
+    </nav>
+  </PageHero>
+
+  <div class="wrap">
+    {productLines.map((l) => {
+      const items = products.filter((p) => p.line === l.key);
+      return items.length > 0 && (
+        <section class="mt-12 scroll-mt-24" id={l.key.replaceAll(' ', '-')}>
+          <h2 class="text-3xl">{l.key}</h2>
+          <p class="text-soft mt-1">{l.blurb}</p>
+          <div class="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {items.map((p) => <ProductCard product={p} />)}
+          </div>
+        </section>
+      );
+    })}
+    <div class="mt-14"><Signup source="/merch/" title="Be first when the store opens" /></div>
+  </div>
+</Layout>

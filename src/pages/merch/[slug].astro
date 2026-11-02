@@ -1,0 +1,60 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Img from '../../components/Img.astro';
+import Signup from '../../components/Signup.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getProducts, formatPrice } from '../../lib/products';
+import type { Product } from '../../data/site';
+
+export async function getStaticPaths() {
+  const products = await getProducts();
+  return products.map((product) => ({
+    params: { slug: product.slug },
+    props: { product, related: products.filter((p) => p.line === product.line && p.slug !== product.slug).slice(0, 4) },
+  }));
+}
+const { product, related } = Astro.props as { product: Product; related: Product[] };
+const price = formatPrice(product.price_cents);
+const planetNumber = product.line === 'Planetary Numbers';
+import { planets } from '../../data/site';
+const planet = planetNumber ? planets.find((p) => product.slug === `number-${p.slug}`) : undefined;
+---
+<Layout title={product.name} description={product.description ?? undefined} image={product.image_path ?? undefined}>
+  <div class="wrap mt-6 text-sm"><a class="link" href={`/merch/#${product.line.replaceAll(' ', '-')}`}>← {product.line}</a></div>
+  <div class="wrap mt-4 grid md:grid-cols-2 gap-8">
+    <div class="space-y-4">
+      <div class="card bg-sand relative">
+        {planet?.number != null && <span class="display absolute right-4 top-2 text-5xl" style={`color:${planet.accent}`}>{planet.number}</span>}
+        <Img src={product.image_path} alt={product.name} eager class="w-full h-auto" sizes="(min-width: 768px) 50vw, 100vw" />
+      </div>
+      {product.alt_images?.map((a) => (
+        <div class="card bg-sand"><Img src={a} alt={`${product.name}, back`} class="w-full h-auto" sizes="(min-width: 768px) 50vw, 100vw" /></div>
+      ))}
+    </div>
+    <div>
+      <p class="eyebrow">{product.line}</p>
+      <h1 class="text-4xl mt-1">{product.name}</h1>
+      {price && <p class="mt-3 text-2xl font-extrabold">{price}</p>}
+      <p class="lede mt-4">{product.description}</p>
+      {product.colors.length > 0 && (
+        <div class="mt-6"><h2 class="font-extrabold" style="font-family:var(--font-sans)">Colors</h2>
+          <ul class="mt-2 flex flex-wrap gap-2">{product.colors.map((c) => <li class="chip">{c}</li>)}</ul></div>
+      )}
+      {product.sizes.length > 0 && (
+        <div class="mt-5"><h2 class="font-extrabold" style="font-family:var(--font-sans)">Sizes</h2>
+          <ul class="mt-2 flex flex-wrap gap-2">{product.sizes.map((s) => <li class="chip">{s}</li>)}</ul></div>
+      )}
+      <div class="mt-7 rounded-2xl bg-sand p-5">
+        <p class="font-extrabold">Checkout arrives with the store launch.</p>
+        <p class="text-sm text-soft mt-1">Join the list below and you'll hear the moment it opens.</p>
+      </div>
+    </div>
+  </div>
+  {related.length > 0 && (
+    <section class="wrap mt-14">
+      <h2 class="text-2xl">More from {product.line}</h2>
+      <div class="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-4">{related.map((p) => <ProductCard product={p} />)}</div>
+    </section>
+  )}
+  <div class="wrap mt-14"><Signup source={`/merch/${product.slug}/`} title="Be first when the store opens" /></div>
+</Layout>

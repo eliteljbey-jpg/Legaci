@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import CoverArt from '../components/CoverArt.astro';
+import { releases, features, writingCredits, listen, tracks, type Disc } from '../data/site';
+
+const groups: { key: string; label: string; items: Disc[] }[] = [
+  { key: 'releases', label: 'Releases', items: releases },
+  { key: 'features', label: 'Features', items: features },
+  { key: 'writing', label: 'Writing & Production', items: writingCredits },
+];
+const linksFor = (d: Disc) => d.searchTerm
+  ? [
+      { label: 'Spotify', href: `https://open.spotify.com/search/${encodeURIComponent(d.searchTerm)}` },
+      { label: 'Apple Music', href: `https://music.apple.com/us/search?term=${encodeURIComponent(d.searchTerm)}` },
+      { label: 'YouTube', href: `https://www.youtube.com/results?search_query=${encodeURIComponent(d.searchTerm)}` },
+    ]
+  : listen;
+---
+<Layout title="Music" description="Every LJ Bey release, feature and writing credit, with links to listen.">
+  <PageHero eyebrow="Discography" title="All the music" lede="Releases, features, and the writing and production behind them." mandala="mandala-throat" tint="#dcf1fa" />
+
+  <div class="wrap mt-8">
+    <div class="flex flex-wrap gap-2 no-print" role="group" aria-label="Filter the discography">
+      <button class="chip" data-filter="all" aria-pressed="true">All</button>
+      {groups.map((g) => <button class="chip" data-filter={g.key} aria-pressed="false">{g.label}</button>)}
+    </div>
+
+    {groups.map((g) => (
+      <section class="mt-10" data-group={g.key}>
+        <h2 class="text-2xl md:text-3xl">{g.label}</h2>
+        <div class="mt-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {g.items.map((d) => (
+            <article class="card flex flex-col">
+              <CoverArt title={d.title} src={d.cover} label={d.year ?? ''} />
+              <div class="p-4 flex flex-col gap-2 flex-1">
+                <h3 class="font-extrabold text-base" style="font-family:var(--font-sans)">{d.title}</h3>
+                <p class="text-sm text-soft">{d.kind}{d.year && ` · ${d.year}`}</p>
+                {d.note && <p class="text-sm">{d.note}</p>}
+                {g.key !== 'writing' && (
+                  <p class="mt-auto pt-1 text-sm flex flex-wrap gap-x-3 gap-y-1">
+                    {d.href
+                      ? <a class="link" href={d.href}>Open</a>
+                      : linksFor(d).map((l) => <a class="link" href={l.href} rel="noopener" aria-label={`${d.title} on ${l.label}`}>{l.label}</a>)}
+                  </p>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <section class="mt-14" data-group="releases">
+      <h2 class="text-2xl md:text-3xl">The Fruit Of Love credits</h2>
+      <div class="mt-4 overflow-x-auto card">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-sand"><tr><th scope="col" class="p-3">#</th><th scope="col" class="p-3">Song</th><th scope="col" class="p-3">Producer</th></tr></thead>
+          <tbody>
+            {tracks.map((t) => (
+              <tr class="border-t border-sand">
+                <td class="p-3 font-bold">{t.number}</td>
+                <td class="p-3">{t.title}{t.feat && ` feat. ${t.feat}`}{t.explicit && <span class="ml-2 rounded bg-sand px-1.5 py-0.5 text-xs font-bold" title="Explicit">E</span>}</td>
+                <td class="p-3">{t.producer}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  chips.forEach((chip) => chip.addEventListener('click', () => {
+    chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+    const f = chip.dataset.filter;
+    document.querySelectorAll<HTMLElement>('[data-group]').forEach((s) => { s.hidden = f !== 'all' && s.dataset.group !== f; });
+  }));
+</script>

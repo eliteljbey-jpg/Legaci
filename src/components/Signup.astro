@@ -1,0 +1,51 @@
+---
+import { site } from '../data/site';
+interface Props { source?: string; title?: string }
+const { source = Astro.url.pathname, title = 'Get every song, every Friday' } = Astro.props;
+---
+<section class="relative overflow-hidden rounded-3xl p-6 md:p-10" style="background:linear-gradient(120deg,#fde4dc,#fdf3c4 45%,#e2f3e4)">
+  <h2 class="text-2xl md:text-3xl">{title}</h2>
+  <p class="mt-2 text-soft">New singles, Saturn Universe episodes and first word on merch.</p>
+  <form class="signup-form mt-5 grid gap-3 md:grid-cols-[1fr_1.4fr_auto] md:items-end" data-source={source} data-mail={site.contactEmail}>
+    <div>
+      <label class="field-label" for={`fn-${source}`}>First name</label>
+      <input class="field" id={`fn-${source}`} name="first_name" autocomplete="given-name" maxlength="100" />
+    </div>
+    <div>
+      <label class="field-label" for={`em-${source}`}>Email</label>
+      <input class="field" id={`em-${source}`} name="email" type="email" required autocomplete="email" maxlength="320" />
+    </div>
+    <div class="sr-trap" aria-hidden="true"><label>Leave empty <input name="company" tabindex="-1" autocomplete="off" /></label></div>
+    <button class="btn btn-gold" type="submit">Join the list</button>
+    <p class="form-status md:col-span-3 font-bold min-h-6" role="status"></p>
+  </form>
+  {/* [CONNECT AT GO-LIVE] Kit (ConvertKit, account "URBN Zen"): set site.kitEmbedSrc in src/data/site.ts */}
+  {site.kitEmbedSrc && <div data-kit-slot class="mt-4"><script is:inline async data-uid="kit" src={site.kitEmbedSrc}></script></div>}
+</section>
+
+<script>
+  import { supabase } from '../lib/supabase';
+  document.querySelectorAll<HTMLFormElement>('.signup-form').forEach((form) => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = form.querySelector('.form-status')!;
+      const d = new FormData(form);
+      if (d.get('company')) return;
+      const fallback = () => {
+        const mail = form.dataset.mail;
+        status.innerHTML = `We couldn't add you just now. Please email <a class="link" href="mailto:${mail}?subject=Add%20me%20to%20the%20list">${mail}</a> and we'll add you.`;
+      };
+      if (!supabase) return fallback();
+      status.textContent = 'Adding you…';
+      const { error } = await supabase.from('email_signups').insert({
+        first_name: String(d.get('first_name') || '').trim() || null,
+        email: String(d.get('email')).trim().toLowerCase(),
+        source_page: form.dataset.source,
+      });
+      // 23505 = already on the list, which is still good news.
+      if (error && error.code !== '23505') return fallback();
+      form.reset();
+      status.textContent = "You're on the list. See you Friday.";
+    });
+  });
+</script>

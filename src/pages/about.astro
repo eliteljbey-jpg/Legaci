@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import Img from '../components/Img.astro';
+import { bio, saturnArt } from '../data/site';
+---
+<Layout title="About" description={bio.short}>
+  <PageHero eyebrow="About" title="LJ Bey" mandala="mandala-root" tint="#fde4dc" />
+  <div class="wrap mt-10 grid gap-10 md:grid-cols-[2fr_1fr] items-start">
+    <div class="prose-body">
+      <p>{bio.long}</p>
+      <h2 class="text-3xl mt-10 mb-3">Born on Saturn</h2>
+      <p>LJ Bey previously released music as Born on Saturn and as Jax.</p>
+      <p>The Saturn identity is personal: Capricorn Moon and Capricorn Ascendant, and in the D9 chart, Aquarius Moon and Aquarius Ascendant. Saturn rules both signs.</p>
+      <h2 class="text-3xl mt-10 mb-3">From the archive</h2>
+      <p>The mixtape Ascension and the Born on Saturn material are not on streaming platforms. They remain unreleased, part of the archive.</p>
+    </div>
+    <div class="orbit-float melt"><Img src={saturnArt} alt="Saturn, the lead Planet Head" class="w-full h-auto" eager sizes="(min-width: 768px) 33vw, 100vw" /></div>
+  </div>
+</Layout>

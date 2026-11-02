@@ -1,0 +1,67 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import CoverArt from '../components/CoverArt.astro';
+import Signup from '../components/Signup.astro';
+import Spotlight from '../components/Spotlight.astro';
+import { tracks, campaign, formatDate, acts, site } from '../data/site';
+
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'MusicAlbum', name: 'The Fruit Of Love',
+  byArtist: { '@type': 'MusicGroup', name: site.name }, datePublished: campaign.albumDate, numTracks: tracks.length,
+  track: tracks.map((t) => ({ '@type': 'MusicRecording', name: t.title, position: t.number, datePublished: t.date })),
+};
+const albumAfter = 16;
+---
+<Layout title="The Fruit Of Love" description="A 39-song love story told as weekly singles, from December 4, 2026 through August 27, 2027." jsonLd={jsonLd} image="/assets/covers/cover-01.webp">
+  <PageHero eyebrow="The campaign" title="The Fruit Of Love" lede="A 39-song love story told as weekly singles. Saturn begins lustful and rushing, is torn in the middle, and ends grounded." mandala="mandala-heart" tint="#fbe3ea">
+    <div class="mt-6 flex flex-wrap gap-3">
+      {campaign.preSaveUrl ? <a class="btn btn-gold" href={campaign.preSaveUrl}>Pre-save</a> : <span class="btn btn-line opacity-80">Pre-save opens soon</span>}
+      {campaign.albumUrl && <a class="btn btn-line" href={campaign.albumUrl}>Hear the album</a>}
+    </div>
+    <p class="mt-5 font-bold">Full album: {formatDate(campaign.albumDate, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+  </PageHero>
+
+  <div class="wrap mt-12"><Spotlight /></div>
+
+  <section class="wrap mt-14 grid gap-4 md:grid-cols-3">
+    {acts.map((a) => (
+      <div class="card p-5" style={`border-top:6px solid ${a.color}`}>
+        <h2 class="text-2xl">{a.name}</h2>
+        <p class="text-sm font-bold text-soft mt-1">{a.range}</p>
+        <p class="mt-2">{a.text}</p>
+      </div>
+    ))}
+  </section>
+
+  <section class="wrap mt-14">
+    <h2 class="text-3xl md:text-4xl">The schedule</h2>
+    <p class="lede mt-2">Every Friday, one song and one scene from Saturn's story.</p>
+    <ol class="mt-6 space-y-3">
+      {tracks.map((t) => (
+        <>
+          <li class="card grid grid-cols-[4.5rem_1fr] sm:grid-cols-[6.5rem_1fr] gap-3 sm:gap-4 p-3 items-start">
+            <CoverArt number={t.number} title={t.short} class="rounded-xl" />
+            <div>
+              <p class="text-sm font-bold text-golddeep">Week {t.number} · {formatDate(t.date)} · {t.act}</p>
+              <h3 class="font-extrabold text-lg leading-snug" style="font-family:var(--font-sans)">
+                {t.title}{t.feat && ` feat. ${t.feat}`}
+                {t.explicit && <span class="ml-1 align-middle rounded bg-sand px-1.5 py-0.5 text-xs font-bold" title="Explicit">E</span>}
+              </h3>
+              <p class="mt-1 text-sm sm:text-base text-soft">{t.action}</p>
+            </div>
+          </li>
+          {t.number === albumAfter && (
+            <li class="rounded-2xl p-5 text-center" style="background:linear-gradient(90deg,#fdf3c4,#fde4dc,#efe4fb)">
+              <p class="eyebrow">{formatDate(campaign.albumDate, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+              <p class="display text-2xl mt-1">The full album arrives</p>
+              <p class="text-sm mt-1 text-soft">The weekly songs keep going that Friday.</p>
+            </li>
+          )}
+        </>
+      ))}
+    </ol>
+  </section>
+
+  <div class="wrap mt-14"><Signup source="/the-fruit-of-love/" /></div>
+</Layout>

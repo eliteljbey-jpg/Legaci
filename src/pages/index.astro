@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Img from '../components/Img.astro';
+import Signup from '../components/Signup.astro';
+import Spotlight from '../components/Spotlight.astro';
+import ProductCard from '../components/ProductCard.astro';
+import PlanetCard from '../components/PlanetCard.astro';
+import { planets, listen, saturnArt, bio } from '../data/site';
+import { getProducts } from '../lib/products';
+const all = await getProducts();
+const featured = ['saturn-hoodie', 'root-saturn-tee', 'heart-venus-crew', 'college-saturn'].map((s) => all.find((p) => p.slug === s)).filter((p) => p !== undefined);
+---
+<Layout description={bio.short}>
+  <section class="relative overflow-hidden" style="background:linear-gradient(150deg,#fdf3c4,#fde4dc 45%,#efe4fb)">
+    <Img src="/assets/mandala-solar-plexus.webp" alt="" eager class="mandala-bg -left-32 -bottom-40 w-[32rem] h-auto" sizes="32rem" />
+    <div class="wrap relative grid md:grid-cols-2 items-center gap-6 py-10 md:py-16">
+      <div>
+        <p class="eyebrow">The Fruit Of Love · Weekly from December 4, 2026</p>
+        <h1 class="mt-3 text-6xl md:text-8xl">LJ Bey</h1>
+        <p class="lede mt-4 max-w-lg !text-ink">39 songs. One love story. Saturn falls to Earth and learns what love costs, one single at a time, every Friday.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a class="btn btn-gold" href="/the-fruit-of-love/">Start the story</a>
+          <a class="btn btn-line" href="/merch/">Shop Planet Heads</a>
+        </div>
+        <ul class="mt-6 flex flex-wrap gap-2">
+          {listen.map((l) => <li><a class="chip" href={l.href} rel="noopener">{l.label}</a></li>)}
+        </ul>
+      </div>
+      <div class="orbit-float melt">
+        <Img src={saturnArt} alt="Saturn, the lead Planet Head, with his gold ring, throwing a peace sign" eager class="w-full max-w-md mx-auto h-auto" sizes="(min-width: 768px) 45vw, 100vw" />
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap mt-12 md:mt-16"><Spotlight /></div>
+
+  <section class="wrap mt-16">
+    <div class="flex items-end justify-between gap-4 flex-wrap">
+      <div>
+        <p class="eyebrow">The crew</p>
+        <h2 class="text-3xl md:text-4xl mt-1">Meet the Planet Heads</h2>
+      </div>
+      <a class="link" href="/planet-heads/">Enter the Saturn Universe</a>
+    </div>
+    <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      {planets.map((p) => <PlanetCard planet={p} compact />)}
+    </div>
+  </section>
+
+  <div class="wrap mt-16"><Signup source="/" /></div>
+
+  <section class="wrap mt-16">
+    <div class="flex items-end justify-between gap-4 flex-wrap">
+      <div>
+        <p class="eyebrow">Merch</p>
+        <h2 class="text-3xl md:text-4xl mt-1">Wear the universe</h2>
+      </div>
+      <a class="link" href="/merch/">See every line</a>
+    </div>
+    <div class="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {featured.map((p) => <ProductCard product={p} />)}
+    </div>
+  </section>
+</Layout>
