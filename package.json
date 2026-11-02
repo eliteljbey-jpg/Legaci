@@ -1,0 +1,35 @@
+{
+  "name": "ljbey-website",
+  "version": "1.0.0",
+  "description": "Official LJ Bey website",
+  "scripts": {
+    "dev": "node scripts/make-thumbs.mjs && astro dev",
+    "prebuild": "node scripts/make-thumbs.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "schema": "node scripts/generate-schema.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliteljbey-jpg/Legaci.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/eliteljbey-jpg/Legaci/issues"
+  },
+  "homepage": "https://github.com/eliteljbey-jpg/Legaci#readme",
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/figtree": "^5.3.0",
+    "@fontsource/bowlby-one": "^5.3.0",
+    "@supabase/supabase-js": "^2.118.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.5",
+    "sharp": "^0.35.5",
+    "tailwindcss": "^4.3.3"
+  },
+  "private": true
+}
